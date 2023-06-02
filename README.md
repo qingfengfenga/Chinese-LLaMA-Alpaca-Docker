@@ -1,5 +1,5 @@
 # 描述
-[Chinese-LLaMA-Alpaca](https://github.com/ymcui/Chinese-LLaMA-Alpaca) 的全容器化方式部署方式，使用 [llama.cpp](https://github.com/ggerganov/llama.cpp)。
+[Chinese-LLaMA-Alpaca](https://github.com/ymcui/Chinese-LLaMA-Alpaca) 的全容器化部署方式，使用 [llama.cpp](https://github.com/ggerganov/llama.cpp)。
 
 你可以在Docker容器内实现以下所有操作，无需在本地安装环境。
 

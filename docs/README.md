@@ -1,10 +1,5 @@
 # 文档
 
-
-
-
-## 
-
 ## 1、初始化目录
 
 原始目录结构
@@ -272,7 +267,7 @@ init-dir-quantize exited with code 0
 
 将上述模型权重转换为 ggml 的 FP16 格式，并生成一个带有 path 的文件。.pthzh-models/7B/ggml-model-f16.bin
 
-``
+```
 $ docker-compose --profile llama-cpp-models-convert up
 [+] Building 0.0s (0/0)
 [+] Running 1/0
@@ -567,7 +562,7 @@ llama-cpp-models-convert  | [290/291] Writing tensor layers.31.feed_forward.w3.w
 llama-cpp-models-convert  | [291/291] Writing tensor layers.31.ffn_norm.weight              | size   4096           | type UnquantizedDataType(name='F32')
 llama-cpp-models-convert  | Wrote /app/models/llama/7B/Chinese-Alpaca-Plus/7B/ggml-model-f16.bin
 llama-cpp-models-convert exited with code 0
-``
+```
 
 转换后的目录格式
 ```
