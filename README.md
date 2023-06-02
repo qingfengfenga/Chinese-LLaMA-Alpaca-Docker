@@ -26,35 +26,35 @@
 
 - 务必确认基本模型和下载的LoRA模型完整性，原版LLaMA包含：`tokenizer.model`、`tokenizer_checklist.chk`、`consolidated.*.pth`、`params.json`。
 
-### Step 1: 将原版LLaMA模型转换为HF格式
+### Step1: 将原版LLaMA模型转换为HF格式
 
 - 复制一份配置文件`.env-template`到`.env`
 
 - 你的原始`./models`目录结构应该和下面一致
 
 ```
-    ./models/llama/7B
-    ├── 7B
-    │   ├── checklist.chk
-    │   ├── consolidated.00.pth
-    │   ├── params.json
-    │   └── tokenizer_checklist.chk
-    └── tokenizer.model
+./models/llama/7B
+├── 7B
+│   ├── checklist.chk
+│   ├── consolidated.00.pth
+│   ├── params.json
+│   └── tokenizer_checklist.chk
+└── tokenizer.model
 
-    1 directory, 5 files
+1 directory, 5 files
 ```
 
 - 创建所需要的其他文件夹
 ```
-    $ docker-compose --profile init-dir up
+$ docker-compose --profile init-dir up
 ```
 
 - 运行转换命令
 ```
-    docker-compose --profile models-convert up
+docker-compose --profile models-convert up
 ```
 
-### Step 2: 合并LoRA权重，生成全量模型权重
+### Step2: 合并LoRA权重，生成全量模型权重
 
 把对应的LoRA放入LoRA文件夹，这是演示为`Chinese-Alpaca-Plus`，需要两个LoRA，并且有顺序要求
 
@@ -104,7 +104,7 @@
 $ docker-compose --profile models-merge up
 ```
 
-### Step 3: 生成量化版本模型
+### Step3: 生成量化版本模型
 
 初始化量化目录结构
 ```
@@ -121,7 +121,7 @@ $ docker-compose --profile llama-cpp-models-convert up
 $ docker-compose --profile llama-cpp-quantize up --build
 ```
 
-加载量化后的模型
+## Step4：加载量化后的模型
 ```
 $ docker run -it -v ./models:/app/models -e LC_ALL=zh_CN.utf8 llama.cpp:full-zh ./main -m /app/models/llama/7B/Chinese-Alpaca-Plus/7B/ggml-model-q4_0.bin --color -f prompts/alpaca.txt -ins -c 2048 --temp 0.2 -n 256 --repeat_penalty 1.1
 ```
