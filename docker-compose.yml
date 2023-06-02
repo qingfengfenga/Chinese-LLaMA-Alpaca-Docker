@@ -1,0 +1,84 @@
+version: '3.9'
+
+# model-convert-merge
+x-base-service: &base_service
+    build: ./services/model-convert-merge
+    image: model-convert-merge
+    volumes:
+      - ./models:/app/models
+
+services:
+
+  init-dir:
+    <<: *base_service
+    profiles: ["init-dir"]
+    container_name:  init-dir
+    command: 
+      - mkdir 
+      - -p
+      - $HF_OUTPUT_DIR
+      - $INPUT_DIR/LoRA
+      - $INPUT_DIR/$MODEL_TYPE
+      - $INPUT_DIR/$MODEL_TYPE/$MODEL_SIZE
+
+  models-convert:
+    <<: *base_service
+    profiles: ["models-convert"]
+    container_name: models-convert
+    environment:
+      - CLI_ARGS=convert_llama_weights_to_hf.py --input_dir $INPUT_DIR --model_size $MODEL_SIZE --output_dir $HF_OUTPUT_DIR
+
+  models-merge:
+    <<: *base_service
+    profiles: ["models-merge"]
+    container_name: models-merge
+    environment:
+      - CLI_ARGS=merge_llama_with_chinese_lora.py --base_model $HF_OUTPUT_DIR --lora_model $LORA_MODEL --output_type $OUTPUT_TYPE --output_dir $MERGED_OUTPUT_DIR
+
+  init-dir-quantize:
+    <<: *base_service
+    profiles: ["init-dir-quantize"]
+    container_name: init-dir-quantize
+    command: >
+      sh -c "mkdir -p $INPUT_DIR/$MODEL_TYPE/$MODEL_SIZE &&
+             mv $INPUT_DIR/$MODEL_TYPE/$MODEL_SIZE/tokenizer.model $INPUT_DIR/$MODEL_TYPE "
+
+  llama-cpp-models-convert:
+    <<: *base_service
+    profiles: ["llama-cpp-models-convert"]
+    container_name: llama-cpp-models-convert
+    environment:
+      - CLI_ARGS=convert.py $MERGED_OUTPUT_DIR
+
+  llama-cpp-quantize:
+    build: ./services/llama.cpp
+    profiles: ["llama-cpp-quantize"]
+    container_name: llama-cpp-quantize
+    image: llama.cpp:full-zh
+    command: 
+      - ./quantize
+      - $MERGED_OUTPUT_DIR/ggml-model-f16.bin
+      - $MERGED_OUTPUT_DIR/ggml-model-q4_0.bin
+      - $QUANTIZE_TYPE
+    volumes:
+      - ./models:/app/models
+
+  # llama-cpp:
+  #   build: ./services/llama.cpp
+  #   profiles: ["llama-cpp"]
+  #   container_name: llama-cpp
+  #   image: llama.cpp:full-zh
+  #   # command:
+  #   #   - ./main
+  #   #   - -m
+  #   #   - $MERGED_OUTPUT_DIR/ggml-model-q4_0.bin
+  #   #   - -p
+  #   #   - "你好"
+  #   #   - -n
+  #   #   - "512"
+  #   environment:
+  #     - CLI_ARGS=bash
+  #   volumes:
+  #     - ./models:/app/models
+
+  
