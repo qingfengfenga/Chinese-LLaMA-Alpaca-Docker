@@ -24,9 +24,11 @@
 
 - 足够的内存和磁盘空间，裸机7B模型需要13-15G，基于WSL2的Docker环境下，7B模型大约需要15-20G内存。
 
-- 务必确认基模型和下载的LoRA模型完整性，原版LLaMA包含：tokenizer.model、tokenizer_checklist.chk、consolidated.*.pth、params.json
+- 务必确认基本模型和下载的LoRA模型完整性，原版LLaMA包含：`tokenizer.model`、`tokenizer_checklist.chk`、`consolidated.*.pth`、`params.json`。
 
 ### Step 1: 将原版LLaMA模型转换为HF格式
+
+- 复制一份配置文件`.env-template`到`.env`
 
 - 你的原始`./models`目录结构应该和下面一致
 
