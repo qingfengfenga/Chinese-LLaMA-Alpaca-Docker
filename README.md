@@ -121,7 +121,7 @@ $ docker-compose --profile llama-cpp-models-convert up
 $ docker-compose --profile llama-cpp-quantize up --build
 ```
 
-## Step4：加载量化后的模型
+### Step4：加载量化后的模型
 ```
 $ docker run -it -v ./models:/app/models -e LC_ALL=zh_CN.utf8 llama.cpp:full-zh ./main -m /app/models/llama/7B/Chinese-Alpaca-Plus/7B/ggml-model-q4_0.bin --color -f prompts/alpaca.txt -ins -c 2048 --temp 0.2 -n 256 --repeat_penalty 1.1
 ```
