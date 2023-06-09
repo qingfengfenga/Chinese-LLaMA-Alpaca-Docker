@@ -63,22 +63,35 @@ services:
     volumes:
       - ./models:/app/models
 
-  # llama-cpp:
-  #   build: ./services/llama.cpp
-  #   profiles: ["llama-cpp"]
-  #   container_name: llama-cpp
-  #   image: llama.cpp:full-zh
-  #   # command:
-  #   #   - ./main
-  #   #   - -m
-  #   #   - $MERGED_OUTPUT_DIR/ggml-model-q4_0.bin
-  #   #   - -p
-  #   #   - "你好"
-  #   #   - -n
-  #   #   - "512"
-  #   environment:
-  #     - CLI_ARGS=bash
-  #   volumes:
-  #     - ./models:/app/models
-
-  
+  text-generation-webui:
+    profiles: ["text-generation-webui"]
+    build:
+      context: ./services/text-generation-webui
+      args:
+        # specify which cuda version your card supports: https://developer.nvidia.com/cuda-gpus
+        TORCH_CUDA_ARCH_LIST: ${TORCH_CUDA_ARCH_LIST}
+        WEBUI_VERSION: ${WEBUI_VERSION}
+    container_name: text-generation-webui
+    env_file: .env
+    ports:
+      - "${HOST_PORT}:${CONTAINER_PORT}"
+      - "${HOST_API_PORT}:${CONTAINER_API_PORT}"
+      - "${HOST_API_STREAM_PORT}:${CONTAINER_API_STREAM_PORT}"
+    stdin_open: true
+    tty: true
+    volumes:
+      # - ${DATA_DIR}/characters:/app/characters
+      # - ${DATA_DIR}/extensions:/app/extensions
+      # - ${DATA_DIR}/loras:/app/loras
+      # - ${DATA_DIR}/presets:/app/presets
+      # - ${DATA_DIR}/prompts:/app/prompts
+      # - ${DATA_DIR}/softprompts:/app/softprompts
+      # - ${DATA_DIR}/training:/app/training
+      - ./models/llama/$MODEL_SIZE/$MODEL_TYPE/$MODEL_SIZE:/app/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]

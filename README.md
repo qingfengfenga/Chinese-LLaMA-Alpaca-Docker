@@ -1,19 +1,32 @@
 # Chinese-LLaMA-Alpaca-Docker
 
-[Chinese-LLaMA-Alpaca](https://github.com/ymcui/Chinese-LLaMA-Alpaca) 的全容器化部署方式，使用 [llama.cpp](https://github.com/ggerganov/llama.cpp)。
+[Chinese-LLaMA-Alpaca](https://github.com/ymcui/Chinese-LLaMA-Alpaca) 的全容器化部署方式。
 
-你可以在Docker容器内实现以下所有操作，无需在本地安装环境。
+你可以在Docker容器内快速实现以下所有操作，无需在本地安装环境。
 
 - 转换原始模型权重到HF格式
 - 合并LoRA权重
 - 量化模型
 - 推理部署
 
+支持的启动方式：
+
+[x] [llama.cpp](https://github.com/ggerganov/llama.cpp)
+
+[x] [text-generation-webui](https://github.com/oobabooga/text-generation-webui) 
+
 ## 演示
+### 使用`llama.cpp`启动
 
 第一次启动容器加载模型，时间会比较久。
 
-![](./imgs/demo.gif)
+![](./imgs/llama-cpp.gif)
+
+### 使用`text-generation-webui`启动
+
+> 已知问题：使用一会儿后开始无法回输出任何内容，刷新页面可以缓解。
+
+![](./imgs/text-generation-webui.gif)
 
 ## 快速开始
 
@@ -52,7 +65,7 @@ $ docker-compose --profile init-dir up
 
 - 运行转换命令
 ```
-docker-compose --profile models-convert up
+$ docker-compose --profile models-convert up
 ```
 
 ### Step2: 合并LoRA权重，生成全量模型权重
@@ -123,25 +136,29 @@ $ docker-compose --profile llama-cpp-quantize up --build
 ```
 
 ### Step4：加载量化后的模型
+
+- 使用`llama.cpp`交互式命令行启动
 ```
 $ docker run -it -v ./models:/app/models -e LC_ALL=zh_CN.utf8 llama.cpp:full-zh ./main -m /app/models/llama/7B/Chinese-Alpaca-Plus/7B/ggml-model-q4_0.bin --color -f prompts/alpaca.txt -ins -c 2048 --temp 0.2 -n 256 --repeat_penalty 1.1
 ```
 
+- 使用`text-generation-webui`Web UI 启动
+```
+$ docker-compose --profile text-generation-webui up --build
+```
+启动完毕后打开 http://0.0.0.0:7860
 ## 致谢
-
-此项目本质是以下文档内操作的容器化，如果有疑难问题无法解决，可以查看原文档。
 
 [facebookresearch/llama](https://github.com/facebookresearch/llama)
 
 [ymcui/Chinese-LLaMA-Alpaca](https://github.com/ymcui/Chinese-LLaMA-Alpaca)
 
-- [手动模型合并与转换](https://github.com/ymcui/Chinese-LLaMA-Alpaca/wiki/%E6%89%8B%E5%8A%A8%E6%A8%A1%E5%9E%8B%E5%90%88%E5%B9%B6%E4%B8%8E%E8%BD%AC%E6%8D%A2)
-
-- [llama.cpp量化部署](https://github.com/ymcui/Chinese-LLaMA-Alpaca/wiki/llama.cpp%E9%87%8F%E5%8C%96%E9%83%A8%E7%BD%B2)
-
 [ggerganov/llama.cpp](https://github.com/ggerganov/llama.cpp)
 
+[oobabooga/text-generation-webui](https://github.com/oobabooga/text-generation-webui) 
+
 ## 免责声明
+
 请严格遵循相应的开源协议。
 
 ## 问题反馈
@@ -152,3 +169,10 @@ $ docker run -it -v ./models:/app/models -e LC_ALL=zh_CN.utf8 llama.cpp:full-zh 
 
 - 提交Issue信息时请先整理好你的问题，包括但不限于环境、版本、操作、日志等。
 
+## 相关文档
+
+此项目本质是以下文档内操作的容器化，如果有疑难问题无法解决，可以查看原文档。
+
+- [手动模型合并与转换](https://github.com/ymcui/Chinese-LLaMA-Alpaca/wiki/%E6%89%8B%E5%8A%A8%E6%A8%A1%E5%9E%8B%E5%90%88%E5%B9%B6%E4%B8%8E%E8%BD%AC%E6%8D%A2)
+
+- [llama.cpp量化部署](https://github.com/ymcui/Chinese-LLaMA-Alpaca/wiki/llama.cpp%E9%87%8F%E5%8C%96%E9%83%A8%E7%BD%B2)

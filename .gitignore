@@ -1,2 +1,4 @@
 .env
 models/llama/*
+data/text-generation-webui/*
+tmp
