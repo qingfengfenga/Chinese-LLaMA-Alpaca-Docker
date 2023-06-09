@@ -1040,3 +1040,100 @@ llama_print_timings: prompt eval time =  5442.10 ms /    42 tokens (  129.57 ms 
 llama_print_timings:        eval time =  2138.00 ms /    11 runs   (  194.36 ms per token)
 llama_print_timings:       total time = 185983.34 ms
 ```
+
+## 9、使用`text-generation-webui`加载量化后的模型
+
+```
+> docker-compose --profile text-generation-webui up --build
+[+] Building 2.0s (30/30) FINISHED
+ => [text-generation-webui internal] load build definition from Dockerfile                                                                                                                    0.0s
+ => => transferring dockerfile: 3.39kB                                                                                                                                                        0.0s 
+ => [text-generation-webui internal] load .dockerignore                                                                                                                                       0.0s 
+ => => transferring context: 2B                                                                                                                                                               0.0s 
+ => [text-generation-webui internal] load metadata for docker.io/nvidia/cuda:11.8.0-runtime-ubuntu22.04                                                                                       1.9s 
+ => [text-generation-webui internal] load metadata for docker.io/nvidia/cuda:11.8.0-devel-ubuntu22.04                                                                                         1.9s 
+ => [text-generation-webui auth] nvidia/cuda:pull token for registry-1.docker.io                                                                                                              0.0s
+ => [text-generation-webui stage-1  1/17] FROM docker.io/nvidia/cuda:11.8.0-runtime-ubuntu22.04@sha256:9b9ce0e128463d147a58b5013255c60e7eb725141f37c197b1ddee5aeb7e4161                       0.0s
+ => [text-generation-webui builder 1/7] FROM docker.io/nvidia/cuda:11.8.0-devel-ubuntu22.04@sha256:9ac394082aed016f825d89739ae691a51ab75f7091154ec44b68bc8c07a6f2e6                           0.0s 
+ => CACHED [text-generation-webui stage-1  2/17] RUN apt-get update &&     apt-get install --no-install-recommends -y libportaudio2 libasound-dev git python3 python3-pip make g++ &&     rm  0.0s 
+ => CACHED [text-generation-webui stage-1  3/17] RUN --mount=type=cache,target=/root/.cache/pip pip3 install virtualenv                                                                       0.0s 
+ => CACHED [text-generation-webui stage-1  4/17] RUN git clone https://github.com/oobabooga/text-generation-webui.git /app                                                                    0.0s 
+ => CACHED [text-generation-webui stage-1  5/17] WORKDIR /app                                                                                                                                 0.0s 
+ => CACHED [text-generation-webui stage-1  6/17] RUN test -n "HEAD" && git reset --hard HEAD || echo "Using provided webui source"                                                            0.0s 
+ => CACHED [text-generation-webui stage-1  7/17] RUN virtualenv /app/venv                                                                                                                     0.0s 
+ => CACHED [text-generation-webui stage-1  8/17] RUN . /app/venv/bin/activate &&     pip3 install --upgrade pip setuptools &&     pip3 install torch torchvision torchaudio                   0.0s 
+ => CACHED [text-generation-webui builder 2/7] RUN apt-get update &&     apt-get install --no-install-recommends -y git vim build-essential python3-dev python3-venv &&     rm -rf /var/lib/  0.0s 
+ => CACHED [text-generation-webui builder 3/7] RUN git clone https://github.com/oobabooga/GPTQ-for-LLaMa /build                                                                               0.0s 
+ => CACHED [text-generation-webui builder 4/7] WORKDIR /build                                                                                                                                 0.0s 
+ => CACHED [text-generation-webui builder 5/7] RUN python3 -m venv /build/venv                                                                                                                0.0s 
+ => CACHED [text-generation-webui builder 6/7] RUN . /build/venv/bin/activate &&     pip3 install --upgrade pip setuptools &&     pip3 install torch torchvision torchaudio &&     pip3 inst  0.0s 
+ => CACHED [text-generation-webui builder 7/7] RUN . /build/venv/bin/activate &&     python3 setup_cuda.py bdist_wheel -d .                                                                   0.0s 
+ => CACHED [text-generation-webui stage-1  9/17] COPY --from=builder /build /app/repositories/GPTQ-for-LLaMa                                                                                  0.0s 
+ => CACHED [text-generation-webui stage-1 10/17] RUN . /app/venv/bin/activate &&     pip3 install /app/repositories/GPTQ-for-LLaMa/*.whl                                                      0.0s 
+ => CACHED [text-generation-webui stage-1 11/17] RUN --mount=type=cache,target=/root/.cache/pip . /app/venv/bin/activate && cd extensions/api && pip3 install -r requirements.txt             0.0s 
+ => CACHED [text-generation-webui stage-1 12/17] RUN --mount=type=cache,target=/root/.cache/pip . /app/venv/bin/activate && cd extensions/elevenlabs_tts && pip3 install -r requirements.txt  0.0s 
+ => CACHED [text-generation-webui stage-1 13/17] RUN --mount=type=cache,target=/root/.cache/pip . /app/venv/bin/activate && cd extensions/google_translate && pip3 install -r requirements.t  0.0s 
+ => CACHED [text-generation-webui stage-1 14/17] RUN --mount=type=cache,target=/root/.cache/pip . /app/venv/bin/activate && cd extensions/silero_tts && pip3 install -r requirements.txt      0.0s 
+ => CACHED [text-generation-webui stage-1 15/17] RUN --mount=type=cache,target=/root/.cache/pip . /app/venv/bin/activate && cd extensions/whisper_stt && pip3 install -r requirements.txt     0.0s 
+ => CACHED [text-generation-webui stage-1 16/17] RUN . /app/venv/bin/activate &&     pip3 install -r requirements.txt                                                                         0.0s 
+ => CACHED [text-generation-webui stage-1 17/17] RUN cp /app/venv/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda118.so /app/venv/lib/python3.10/site-packages/bitsandbytes/l  0.0s 
+ => [text-generation-webui] exporting to image                                                                                                                                                0.0s 
+ => => exporting layers                                                                                                                                                                       0.0s 
+ => => writing image sha256:e7a145b1e403a2c839cd8f436b1bdb8346ad5cc953c8f96840c7d6ab010578fc                                                                                                  0.0s 
+ => => naming to docker.io/library/chinese-llama-alpaca-docker-text-generation-webui                                                                                                          0.0s 
+[+] Running 1/1
+ ✔ Container text-generation-webui  Recreated                                                                                                                                                 0.1s 
+Attaching to text-generation-webui
+text-generation-webui  | 
+text-generation-webui  | ==========
+text-generation-webui  | == CUDA ==
+text-generation-webui  | ==========
+text-generation-webui  |
+text-generation-webui  | CUDA Version 11.8.0
+text-generation-webui  |
+text-generation-webui  | Container image Copyright (c) 2016-2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+text-generation-webui  |
+text-generation-webui  | This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+text-generation-webui  | By pulling and using the container, you accept the terms and conditions of this license:
+text-generation-webui  | https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+text-generation-webui  |
+text-generation-webui  | A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+text-generation-webui  |
+text-generation-webui  | bin /app/venv/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda118_nocublaslt.so
+text-generation-webui  | INFO:Loading ggml-model-q4_0.bin...
+text-generation-webui  | INFO:llama.cpp weights detected: models/ggml-model-q4_0.bin
+text-generation-webui  |
+text-generation-webui  | INFO:Cache capacity is 0 bytes
+text-generation-webui  | llama.cpp: loading model from models/ggml-model-q4_0.bin
+text-generation-webui  | llama_model_load_internal: format     = ggjt v3 (latest)
+text-generation-webui  | llama_model_load_internal: n_vocab    = 49954
+text-generation-webui  | llama_model_load_internal: n_ctx      = 512
+text-generation-webui  | llama_model_load_internal: n_embd     = 4096
+text-generation-webui  | llama_model_load_internal: n_mult     = 256
+text-generation-webui  | llama_model_load_internal: n_head     = 32
+text-generation-webui  | llama_model_load_internal: n_layer    = 32
+text-generation-webui  | llama_model_load_internal: n_rot      = 128
+text-generation-webui  | llama_model_load_internal: ftype      = 2 (mostly Q4_0)
+text-generation-webui  | llama_model_load_internal: n_ff       = 11008
+text-generation-webui  | llama_model_load_internal: n_parts    = 1
+text-generation-webui  | llama_model_load_internal: model size = 7B
+text-generation-webui  | llama_model_load_internal: ggml ctx size =    0.07 MB
+text-generation-webui  | llama_model_load_internal: mem required  = 5486.61 MB (+ 1026.00 MB per state)
+text-generation-webui  | .
+text-generation-webui  | llama_init_from_file: kv self size  =  256.00 MB
+text-generation-webui  | AVX = 1 | AVX2 = 1 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 1 | VSX = 0 |
+text-generation-webui  | INFO:Loaded the model in 76.39 seconds.
+text-generation-webui  |
+text-generation-webui  | INFO:Loading the extension "gallery"...
+text-generation-webui  | Running on local URL:  http://0.0.0.0:7860
+text-generation-webui  | 
+text-generation-webui  | To create a public link, set `share=True` in `launch()`.
+text-generation-webui  | 
+text-generation-webui  | llama_print_timings:        load time =  6209.30 ms
+text-generation-webui  | llama_print_timings:      sample time =     9.90 ms /    16 runs   (    0.62 ms per token)
+text-generation-webui  | llama_print_timings: prompt eval time =  6209.10 ms /    70 tokens (   88.70 ms per token)
+text-generation-webui  | llama_print_timings:        eval time =  2517.49 ms /    15 runs   (  167.83 ms per token)
+text-generation-webui  | llama_print_timings:       total time =  8790.91 ms
+text-generation-webui  | Output generated in 9.11 seconds (1.65 tokens/s, 15 tokens, context 70, seed 279796759)
+text-generation-webui  | llama_print_timings:        load time =  6209.30 ms
+```
