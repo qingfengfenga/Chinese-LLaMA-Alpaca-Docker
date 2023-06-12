@@ -11,9 +11,9 @@
 
 支持的启动方式：
 
-[x] [llama.cpp](https://github.com/ggerganov/llama.cpp)
+- [x] [llama.cpp](https://github.com/ggerganov/llama.cpp)
 
-[x] [text-generation-webui](https://github.com/oobabooga/text-generation-webui) 
+- [x] [text-generation-webui](https://github.com/oobabooga/text-generation-webui) 
 
 ## 演示
 ### 使用`llama.cpp`启动
